@@ -160,6 +160,8 @@ select pg_read_file('/var/tmp/t_dummy');
 create table t_dummy3 as select pg_read_file('/var/tmp/t_dummy');
 select * from t_dummy3 limit 5;
 select pg_stat_file('/var/tmp/t_dummy');
+\set my_content `cat /var/tmp/t_dummy`
+select :'my_content';
 create table lottery ( draw_date date, winning_numbers text, mega_ball integer, multiplier integer );
 copy lottery from program 'curl https://data.ny.gov/api/views/5xaw-6ayf/rows.csv?accessType=DOWNLOAD' with (header true, delimiter ',', format csv);
 select * from lottery limit 5;
@@ -331,4 +333,3 @@ notify doag2021, 'this is an asynchronous message';
 notify doag2021, 'this is an asynchronous message AND THE END OF THIS TALK';
 -- session 1
 listen doag2021;
-
