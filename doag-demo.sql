@@ -105,6 +105,7 @@ select * from pg_ts_config;
 alter table t_full_text add tokens tsvector;
 update t_full_text set tokens = to_tsvector(sentence);
 select * from t_full_text where tokens @@ to_tsquery('what & happens');
+select * from t_full_text where tokens @@ to_tsquery('what & death');
 drop table t_full_text;
 
 -----------------------------------------------------------------======================================================
@@ -237,7 +238,7 @@ sudo locale-gen
 sudo systemctl restart postgresql-PG1.service
 psql
 select pg_import_system_collations('pg_catalog');
-select * from numbers order by number  collate "de-CH";
+select * from numbers order by number  collate "de_DE";
 drop table numbers;
 
 
@@ -246,14 +247,9 @@ drop table numbers;
 
 -- 9. template databases
 select 'Part 9: Template databases' as chapter;
--- this needs two sessions
--- session 1 
 \c template1
+\l
 drop database postgres;
-create database postgres;
-create database postgres1 with template = template1;
-drop database postgres;
-drop database postgres1;
 alter database template1 is_template false;
 \c template0
 alter database template0 allow_connections = true;
@@ -270,14 +266,14 @@ create database postgres;
 \c postgres postgres
 create table t1 as select x as id, now() as datum from generate_series(1,1000000) x;
 create database my_new_db with template = postgres;
- \c my_new_db
+\c my_new_db
 select count(*) from t1;
 alter database my_new_db is_template = true;
 alter database my_new_db allow_connections = false;
- \c postgres
+\c postgres
 alter database my_new_db allow_connections = false;
 drop table t1;
-rop database my_new_db;
+drop database my_new_db;
 alter database my_new_db is_template = false;
 drop database my_new_db;
 \l
@@ -310,9 +306,10 @@ select count(*) from a.t1;
 -- session 1
 alter default privileges in schema a grant select on tables to v;
 create table a.t2 ( a int );
+-- session 2
 select count(*) from a.t2;
 -- session 1 and 2
- \c postgres postgres
+\c postgres postgres
 -- session 1
 drop schema a cascade;
 drop user v;
